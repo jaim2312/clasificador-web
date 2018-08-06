@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/WEB-INF/decorators">
+    <!-- <excludes>
+        <pattern>/partial_view/*</pattern>
+    </excludes> -->
+    
+    <decorator name="default" page="master.jsp">
+        <pattern>*/views/*</pattern>
+    </decorator>
+</decorators>

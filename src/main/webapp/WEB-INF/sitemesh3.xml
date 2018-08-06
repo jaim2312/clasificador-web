@@ -1,0 +1,5 @@
+<sitemesh>
+	<mapping path="/*" decorator="/WEB-INF/decorators/master.jsp"/>
+	<!-- Exclude path from decoration. -->
+  	<!-- <mapping path="/partial_view/*" exclue="true"/> -->
+</sitemesh>

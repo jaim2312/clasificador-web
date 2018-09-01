@@ -38,43 +38,33 @@ public class UtilClasificador {
 		// converting String to ASCII value in Java		
 		try { 
 			
-			String clearCad = "";
+			String cad_limpia = "";
 			
-			int[] byteNotAuth = new int[]{63,40,41};
-			
-			// String text = "ABCDEFGHIJKLMNOP";
-			// translating text String to 7 bit ASCII encoding
+			int[] ascii_no_autorizados = new int[]{63,40,41};			
 			byte[] bytes = text.getBytes("US-ASCII");
-			// System.out.println("ASCII value of " + text + " is following");
-			// System.out.println(Arrays.toString(bytes));
 						
-			ArrayList<Byte> bytesToArray = asciiBytesToArray(bytes);
-			
+			ArrayList<Byte> bytesToArray = asciiBytesToArray(bytes);			
 			ArrayList<Integer> positions = new ArrayList<Integer>();
 			
-			for(int i = 0 ; i < byteNotAuth.length; i++) {
-									
-				//System.out.println("Encontrado " + byteNotAuth[i]);
-				
+			for(int i = 0 ; i < ascii_no_autorizados.length; i++) {				
 				// Identificar en que posiciones se encuentra el caracter no autorizado
 				for(int j = 0; j < bytes.length; j++){						
-					if( bytes[j] == byteNotAuth[i] ){
+					if( bytes[j] == ascii_no_autorizados[i] ){
 						positions.add(j);
 					}
-				}
-					
+				}				
 			}
 									
 			// Crear cadena sin caracteres no permitidos
 			for (int x = 0; x < text.length(); x++) {
 				
 				if( !positions.contains(x) ){
-					clearCad = clearCad + text.charAt(x);
+					cad_limpia = cad_limpia + text.charAt(x);
 				}
 			}
 				   
 			// return positions;
-			return clearCad.trim();
+			return cad_limpia.trim();
 			
 		} catch (java.io.UnsupportedEncodingException e) { 
 			e.printStackTrace();
@@ -100,32 +90,32 @@ public class UtilClasificador {
 		return listado;
 	}
 	
-	public static String stripAccents(String s)
+	public static String stripAccents(String cad)
 	{
-	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
-	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-	    return s;
+	    cad = Normalizer.normalize(cad, Normalizer.Form.NFD);
+	    cad = cad.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+	    return cad;
 	}
 	
-	public static String removeFinalDot(String s) {
-		if(s.endsWith(".")) {
+	public static String removeFinalDot(String cad) {
+		if(cad.endsWith(".")) {
 			int cantidad = 1; /* Total de elementos a Eliminar*/  
 			/* Total de elementos a Mostrar*/      
-			int m = Math.max(0, s.length() - cantidad);
-			StringBuilder sb = new StringBuilder(s);
-			sb.setLength(m);			
+			int m = Math.max(0, cad.length() - cantidad);
+			StringBuilder sb = new StringBuilder(cad);
+			sb.setLength(m);		
 			
-			s = sb.toString();
+			cad = sb.toString();
 		}
-		return s;
+		return cad;
 	}
 	
 	public static String moreSpaceToOne(String cad){
 		return cad.replaceAll("\\s+", " ");
 	}
 	
-	public static String[] arrWords(String cadena){
-		return cadena.split("\\s+|\n");
+	public static String[] arrWords(String cad){
+		return cad.split("\\s+|\n");
 	}
 	
 	public static String stripUnderscore(String cad) {
@@ -134,43 +124,43 @@ public class UtilClasificador {
 	
 	public static ArrayList<IndividuoTI> getIndividuoTIByModel(OntModel model,ArrayList<Conocimiento> listSelecConoc){
 		
-		ArrayList<IndividuoTI> individuos = new ArrayList<IndividuoTI>();
+		ArrayList<IndividuoTI> individuosTI = new ArrayList<IndividuoTI>();
 		
-		Iterator individuals = model.listIndividuals();
-		while(individuals.hasNext()){
-			Individual individual = (Individual) individuals.next();
+		Iterator lstIndividuos = model.listIndividuals();
+		while(lstIndividuos.hasNext()){
+			Individual individuo = (Individual) lstIndividuos.next();
 			
-			Boolean bEncontrado = Util.bEncNodo(individual, listSelecConoc);
+			Boolean bEncontrado = Util.bEncNodo(individuo, listSelecConoc);
 			
 			if(bEncontrado){
 			
 				IndividuoTI IndTmp = new IndividuoTI();
 				
-				// Listo para realizar la comparaci�n de cadenas
-				String descripcion_tmp = stripUnderscore(individual.getLocalName()).toLowerCase();
+				// Listo para realizar la comparación de cadenas
+				String descripcion_tmp = stripUnderscore(individuo.getLocalName()).toLowerCase();
 				
 				if(!descripcion_tmp.trim().equals("")){			
-					IndTmp.setIndividuo(individual);
+					IndTmp.setIndividuo(individuo);
 					
 					IndTmp.setDescripcion(descripcion_tmp);
 					IndTmp.setLongitud(descripcion_tmp.length());
 					
-					individuos.add(IndTmp);
+					individuosTI.add(IndTmp);
 				}
 			}
 		}
 		
-		return individuos;
+		return individuosTI;
 	}
 	
-	public static String getNumWordByN(String[] arr,int since, int n){
+	public static String getNumWordByN(String[] arr,int desde, int n){
 		//String[] arr = arrWords(cad);
 		String result = null;
 		
-		if((since+n-1) <= arr.length){
+		if((desde+n-1) <= arr.length){
 			result = "";
 			for(int i=0;i<n;i++){
-				result = result + arr[i+since-1] + " "; 
+				result = result + arr[i+desde-1] + " ";
 			}
 			result = result.trim();
 		}
@@ -186,10 +176,10 @@ public class UtilClasificador {
 			Files.walk(Paths.get(sRuta)).forEach(ruta-> {
 			    if (Files.isRegularFile(ruta)) {
 			    	//Filtrar archivo por extensión
-			    	Pattern p = Pattern.compile("^.*(pdf|PDF)$");
-			        Matcher m = p.matcher(ruta.toString());
+			    	Pattern patron = Pattern.compile("^.*(pdf|PDF)$");
+			        Matcher match = patron.matcher(ruta.toString());
 			        
-			        if(m.matches()) fileProcess.add(ruta);
+			        if(match.matches()) fileProcess.add(ruta);
 			    }
 			});
 		} catch (IOException ex) {
@@ -201,7 +191,7 @@ public class UtilClasificador {
 	
 	public static ArrayList<Clasificador> clasificar_cv(ArrayList<Path> fileProcess, ModelOnto mOnto, ArrayList<Conocimiento> listSelecConoc){
 		
-		ArrayList<Clasificador> r = new ArrayList<Clasificador>();		
+		ArrayList<Clasificador> lstClasifidosCV = new ArrayList<Clasificador>();		
 		
 		for(Path cvActual : fileProcess){
 			try {
@@ -238,7 +228,7 @@ public class UtilClasificador {
 			        				Statement s = props.next();
 	
 			                        if (s.getObject().isLiteral() && s.getPredicate().getLocalName().equals("sinonimo") ) {
-			                        	// Sin�nimos listos para comparar
+			                        	// Sinónimos listos para comparar
 			                        	String[] sinonimos = s.getLiteral().getLexicalForm().toLowerCase().split(",");
 			                        	ind_sinonimos.addAll(Arrays.asList(sinonimos));
 			                        	break;
@@ -323,31 +313,31 @@ public class UtilClasificador {
 		        	}
 		        }
 		        
-		        Clasificador cla = new Clasificador();
-		        cla.setFileNameCV(cvActual.getFileName().toString());
-		        cla.setArrIndividuoEnc(arrIndividuoEncont);
+		        Clasificador clasificado = new Clasificador();
+		        clasificado.setFileNameCV(cvActual.getFileName().toString());
+		        clasificado.setArrIndividuoEnc(arrIndividuoEncont);
 		        
 		        for(PorcSim obj : arrIndividuoEncont){
 		        	System.out.println(cvActual.getFileName().toString() + " | " + obj.getDescOnto() + " | " + obj.getSubCadena() + " | " + obj.getPorcentaje() + " | " + obj.getNumLinea());
 		        }
 		        
-		        r.add(cla);
+		        lstClasifidosCV.add(clasificado);
 			} catch (Exception e){
 				System.out.println(e.getMessage());
 				e.printStackTrace();
 			}
 		}
 		
-		return r;
+		return lstClasifidosCV;
 	}
 	
 	public static ArrayList<Clasificador> calificar_cv(ArrayList<Clasificador> arrClasificador){		
 		Collections.sort(arrClasificador, Clasificador.CalificadorSizeIndEnc);
 		
-		for (Clasificador cla : arrClasificador) {
+		for (Clasificador clasificado : arrClasificador) {
 			System.out.println("-----------------------------");
 		    //System.out.println(cla.getCv());
-		    System.out.println(cla.getArrIndividuoEnc().size());
+		    System.out.println(clasificado.getArrIndividuoEnc().size());
 		}
 		
 		return arrClasificador;

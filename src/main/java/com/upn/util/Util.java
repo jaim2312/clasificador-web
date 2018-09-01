@@ -29,7 +29,7 @@ public class Util {
 	public static ModelOnto getOntology(ServletContext context) throws FileNotFoundException{
 		String onto_path = context.getRealPath("/resources/TI.rdf");
 		
-		ModelOnto r = new ModelOnto();
+		ModelOnto modelOnto = new ModelOnto();
 		File file_onto = new File(onto_path);
 		
 		FileInputStream reader = new FileInputStream(file_onto);
@@ -46,10 +46,10 @@ public class Util {
 		    onto = (Ontology) iter.next();
 		}
 		
-		r.setModelo(model);
-		r.setOntologia(onto);
+		modelOnto.setModelo(model);
+		modelOnto.setOntologia(onto);
 		
-		return r;
+		return modelOnto;
 	}
 	
 	public static ArrayList<OntoJsTree> listadoOntoNodo(Ontology onto, boolean onlyClass) {
@@ -87,8 +87,8 @@ public class Util {
 	
 	public static ArrayList<OntClass> listSubClass(OntClass clase, ArrayList<OntoJsTree> listado){
 		
-		ArrayList<OntClass> resultado = new ArrayList<OntClass>();
-		resultado.add(clase);
+		ArrayList<OntClass> lstSubClases = new ArrayList<OntClass>();
+		lstSubClases.add(clase);
 		
 		
 		OntoJsTree ontoNodo = new OntoJsTree(clase,null);
@@ -96,12 +96,12 @@ public class Util {
         if (ontoTieneHijo(ontoNodo.getNodeChild().getLocalName(), listado) == true){
         	System.out.println(clase.getLocalName() + " tiene hijos!");
         	
-        	resultado = ConstruirNodoHijo(listado, ontoNodo, resultado);
+        	lstSubClases = ConstruirNodoHijo(listado, ontoNodo, lstSubClases);
 
             //if (resultado != null) jsNodo.setChildren(resultado);
         }
 			
-		return resultado;
+		return lstSubClases;
 	}
 	
 	public static Conocimiento bEncNodo(OntoJsTree nodo_recorrido_actual, ArrayList<Conocimiento> lstSelect) {
@@ -150,20 +150,15 @@ public class Util {
 	protected static ArrayList<OntClass> ConstruirNodoHijo(ArrayList<OntoJsTree> listado, OntoJsTree nodo, 
 			ArrayList<OntClass> listadoHijos)
 	{
-	   	//ArrayList<OntClass> listadoHijos = new ArrayList<OntClass>();
-
 	    if (nodo.getNodeChild() != null) {
 
 	        for(OntoJsTree nodo_recorrido_actual : listado) {
 	        	if(nodo_recorrido_actual.getNodeParent() != null ){
 		            if ( nodo_recorrido_actual.getNodeParent().getLocalName().equals(nodo.getNodeChild().getLocalName()) ) {	                	
 		                
-		            	//System.out.println(nodo_recorrido_actual.getNodeChild());
 		            	listadoHijos.add(nodo_recorrido_actual.getNodeChild().asClass());
 		            	
-		                if (ontoTieneHijo(nodo_recorrido_actual.getNodeChild().getLocalName(), listado))
-		                {		                	
-		                	//ArrayList<OntClass> resultado = 
+		                if (ontoTieneHijo(nodo_recorrido_actual.getNodeChild().getLocalName(), listado)) {
 		                	ConstruirNodoHijo(listado, nodo_recorrido_actual, listadoHijos);
 		                }
 		            }
